@@ -8,6 +8,14 @@ namespace DuMir
 {
 	class PreLoader
 	{
+		public async PreLoaderWorkResult RunAsync()
+		{
+
+		}
+	}
+
+	class PreLoaderWorkResult
+	{
 
 	}
 }
