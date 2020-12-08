@@ -1,0 +1,25 @@
+﻿<Window x:Class="DuMir.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DuMir"
+        mc:Ignorable="d" KeyDown="MainWindow_KeyDown"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+        
+        <TextBox Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                 Margin="25 0" x:Name="consoleInputTextBox"/>
+        
+        <TextBlock Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15" Background="DarkGray"
+                   x:Name="consoleTextBlock"/>
+    </Grid>
+</Window>
