@@ -16,12 +16,17 @@ namespace DuMir
 			var files = preLoaderResult.LinkedFiles;
 
 			Logger.LogMessage("Start files sorting", Logger.LogLevel.Info);
+
 			Logger.LogMessage("Code files....", Logger.LogLevel.Info);
 			preLoaderResult.CodeFiles.AddRange(files.Where(s => s.ContentType == DuProjectFileInfo.Type.Code).Select(s => new DuCode(s)));
+
 			Logger.LogMessage("Property file....", Logger.LogLevel.Info);
-			preLoaderResult.PropertyFile = new DuProjectProperies(files.Single(s => s.ContentType == DuProjectFileInfo.Type.Properties));
+			var val = files.SingleOrDefault(s => s.ContentType == DuProjectFileInfo.Type.Properties);
+			preLoaderResult.PropertyFile = val == null ? null : new DuProjectProperies(val);
+
 			Logger.LogMessage("Assets files....", Logger.LogLevel.Info);
 			preLoaderResult.AssestFiles.AddRange(files.Where(s => s.ContentType == DuProjectFileInfo.Type.Asset).Select(s => new DuProjectAsset(s)));
+
 			Logger.LogMessage("End files sorting", Logger.LogLevel.Info);
 
 			Logger.LogMessage("Finalizing project object", Logger.LogLevel.Info);

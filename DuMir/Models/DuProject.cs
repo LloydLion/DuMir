@@ -49,12 +49,15 @@ namespace DuMir.Models
 
 		protected override void FinalizeObjectE()
 		{
-			AssestFiles = (AssestFiles as List<DuProjectAsset>).AsReadOnly();
-			ModulesObjects = (ModulesObjects as List<DuModule>).AsReadOnly();
-			CodeFiles = (CodeFiles as List<DuCode>).AsReadOnly();
-			ModulesFullPaths = (ModulesFullPaths as List<string>).AsReadOnly();
+			using(new ModelOpenHandler(this))
+			{
+				AssestFiles = (AssestFiles as List<DuProjectAsset>).AsReadOnly();
+				ModulesObjects = (ModulesObjects as List<DuModule>).AsReadOnly();
+				CodeFiles = (CodeFiles as List<DuCode>).AsReadOnly();
+				ModulesFullPaths = (ModulesFullPaths as List<string>).AsReadOnly();
 
-			base.FinalizeObjectE();
+				base.FinalizeObjectE();
+			}
 		}
 	}
 }

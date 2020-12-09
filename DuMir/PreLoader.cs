@@ -15,10 +15,10 @@ namespace DuMir
 		{
 			Logger.LogMessage("PRELOADING STADE START", Logger.LogLevel.Warning);
 
-			var project = JsonConvert.DeserializeObject<DuProject>(File.ReadAllText(".\\project\\executable.duproj"));
+			var project = JsonConvert.DeserializeObject<DuProject>(File.ReadAllText(".\\executable.duproj"));
 			Logger.LogMessage("Project Base generated", Logger.LogLevel.Info);
 
-			LookUpProjectModules(project, ".\\project");
+			LookUpProjectModules(project, ".");
 			Logger.LogMessage("Modules attached to project", Logger.LogLevel.Info);
 
 			LookUpAllModulesAndDepartmentsOfProject(project);

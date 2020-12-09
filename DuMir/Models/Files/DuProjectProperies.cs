@@ -13,10 +13,10 @@ namespace DuMir.Models.Files
 {
 	class DuProjectProperies : Model
 	{
-		[JsonPropertyName("version")]
+		[JsonProperty(PropertyName = "version")]
 		public string Version { get; private set; }
 
-		[JsonPropertyName("authors")]
+		[JsonProperty(PropertyName = "authors")]
 		public string[] Authors { get; private set; }
 
 		[JsonIgnore]
@@ -25,12 +25,14 @@ namespace DuMir.Models.Files
 
 		public DuProjectProperies(DuProjectFileInfo info)
 		{
-			var obj = JsonConvert.DeserializeObject<DuProjectProperies>(File.ReadAllText(info.Path));
+			var obj = JsonConvert.DeserializeObject<DuProjectProperies>(File.ReadAllText(info.Path), new JsonSerializerSettings() { ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor });
 
 			FileInfo = info;
 			Authors = obj.Authors;
 			Version = obj.Version;
 		}
+
+		private DuProjectProperies() { }
 
 
 		public override string ToString() => $"Project Properies [Version:{Version}] described on file at {FileInfo.Path} by {string.Join(", ", Authors)}";

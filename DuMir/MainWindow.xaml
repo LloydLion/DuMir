@@ -20,6 +20,7 @@
                  Margin="25 0" x:Name="consoleInputTextBox"/>
 
         <TextBox Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15" Background="DarkGray"
-                 x:Name="consoleTextBlock" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True"/>
+                 x:Name="consoleTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                 IsReadOnly="True"/>
     </Grid>
 </Window>

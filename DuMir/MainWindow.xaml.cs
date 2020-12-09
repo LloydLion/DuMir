@@ -29,6 +29,11 @@ namespace DuMir
 			ConsoleHandler.InitGlobal(new ConsoleHandler(ReadFromConsole, WriteToConsole));
 
 			Logger.LogMessage("Privet Mir", Logger.LogLevel.Warning);
+
+			consoleTextBox.TextChanged += (sender, e) =>
+			{
+				consoleTextBox.ScrollToEnd();
+			};
 		}
 
 		private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -44,12 +49,13 @@ namespace DuMir
 			if(e.Key == Key.Tab && e.IsDown)
 			{
 				var project = new PreLoader().Run();
+				project = new PostLoader().Run(project);
 			}
 		}
 
 		private void WriteToConsole(string arg)
 		{
-			consoleTextBlock.Text += arg;
+			consoleTextBox.Text += arg;
 		}
 
 		private string ReadFromConsole(int length)
