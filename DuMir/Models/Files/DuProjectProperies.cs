@@ -2,6 +2,7 @@
 using StandardLibrary.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -21,16 +22,14 @@ namespace DuMir.Models.Files
 		[JsonIgnore]
 		public DuProjectFileInfo FileInfo { get; private set; }
 
-		private DuProjectProperies() { }
 
-
-		public static DuProjectProperies CreateInstanceFromJSON(string json, DuProjectFileInfo info)
+		public DuProjectProperies(DuProjectFileInfo info)
 		{
-			var obj = JsonConvert.DeserializeObject<DuProjectProperies>(json);
+			var obj = JsonConvert.DeserializeObject<DuProjectProperies>(File.ReadAllText(info.Path));
 
-			obj.FileInfo = info;
-
-			return obj;
+			FileInfo = info;
+			Authors = obj.Authors;
+			Version = obj.Version;
 		}
 
 

@@ -11,7 +11,7 @@ namespace DuMir
 	/// <summary>
 	/// Interaction logic for App.xaml
 	/// </summary>
-	public partial class App : Application
+	partial class App : Application
 	{
 	}
 }

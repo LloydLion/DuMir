@@ -1,4 +1,5 @@
-﻿using StandardLibrary.Models;
+﻿using Newtonsoft.Json;
+using StandardLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ namespace DuMir.Models
 {
 	class DuProjectFileInfo : Model
 	{
-		[JsonPropertyName("type")]
+		[JsonProperty(PropertyName = "type")]
 		public Type ContentType { get; private set; }
 
 
-		[JsonPropertyName("path")]
+		[JsonProperty(PropertyName = "path")]
 		public string Path { get; private set; }
 
 

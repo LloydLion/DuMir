@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 
 namespace DuMir
 {
-	public partial class MainWindow : Window
+	partial class MainWindow : Window
 	{
 		private StringBuilder inputText = new StringBuilder();
 
@@ -39,6 +39,11 @@ namespace DuMir
 				Logger.LogMessage(consoleInputTextBox.Text, Logger.LogLevel.UserInput);
 				Logger.LogMessage("Privet Mir", Logger.LogLevel.Info);
 				consoleInputTextBox.Clear();
+			}
+
+			if(e.Key == Key.Tab && e.IsDown)
+			{
+				var project = new PreLoader().Run();
 			}
 		}
 

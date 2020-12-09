@@ -2,6 +2,7 @@
 using StandardLibrary.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -19,15 +20,14 @@ namespace DuMir.Models.Files
 		public DuProjectFileInfo FileInfo { get; private set; }
 
 
-		private DuProjectAsset() { }
-
-
-		public static DuProjectAsset CreateInstanceFromJSON(string json, DuProjectFileInfo info)
+		public DuProjectAsset(DuProjectFileInfo info)
 		{
-			var obj = JsonConvert.DeserializeObject<DuProjectAsset>(json);
-			obj.FileInfo = info;
-			return obj;
+			var obj = JsonConvert.DeserializeObject<DuProjectAsset>(File.ReadAllText(info.Path));
+
+			FileInfo = info;
+			LinkedAssetPath = obj.LinkedAssetPath;
 		}
+
 
 		public override string ToString() => FileInfo.ToString();
 	}
