@@ -11,7 +11,7 @@ namespace DuMir.Models.Files
 {
 	class DuCode : Model
 	{
-		public string Text { get; private set; }
+		public string Text { get; set; }
 
 		public DuProjectFileInfo FileInfo { get; private set; }
 
