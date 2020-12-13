@@ -50,6 +50,8 @@ namespace DuMir
 			{
 				var project = new PreLoader().Run();
 				project = new PostLoader().Run(project);
+				var analysedProject = new CodeAnalyser().Run(project);
+				new Interpretator().Run(analysedProject);
 			}
 		}
 

@@ -25,25 +25,22 @@ namespace DuMir
 
 		public readonly static Type[] definedInstructions = new Type[]
 		{
-			typeof(SumInstruction)
+			typeof(SumInstruction),
+			typeof(DefineVariable)
 		};
 
 		
 		public DuAnalyzedProject Run(DuProject project)
 		{
-			var analyzedCode = new List<DuAnalysedCode>();
+			var analyzedProject = new DuAnalyzedProject(project);
 
 			foreach (var item in project.CodeFiles)
 			{
 				NonLecsicAnalys(item);
-				var analyzed = BlockSplitting(item);
-				analyzed = TypiseBlocks(analyzed);
+				var analyzed = BlockSplitingAndTypping(item);
 				analyzed = AliasReplace(analyzed);
-				analyzedCode.Add(analyzed);
+				analyzedProject.AnalysedCode.Add(analyzed); 
 			}
-
-			var analyzedProject = new DuAnalyzedProject(project);
-			analyzedProject.AnalysedCode.AddRange(analyzedCode);
 
 			analyzedProject = FinalizeAnalyse(analyzedProject);
 
@@ -55,47 +52,19 @@ namespace DuMir
 			return analyzedProject;
 		}
 
-		private static DuAnalysedCode TypiseBlocks(DuAnalysedCode analyzed)
-		{
-			var constructors = definedBlocks.Select(s => s.GetConstructor(new Type[] { typeof(IEnumerable<CodeExecutable>) })).ToList();
-			var names = definedBlocks.Select(s => s.GetField("CODEDEFINE", BindingFlags.Static | BindingFlags.Public).GetValue(null) as string).ToList();
-			var blocks = analyzed.Executables.Select((s, i) => (s as NullBlock, i)).Where(s => s.Item1 != null).ToList();
-
-			for(int i = 0; i < blocks.Count; i++)
-			{
-				var block = blocks[i].Item1;
-
-				var index = names.FindIndex(s => MatchCodeObjectNameWithPattern(s, block.StringForm));
-				analyzed.Executables[blocks[i].i] = constructors[index].Invoke(new object[] { block.Executables as IEnumerable<CodeExecutable> } ) as CodeBlock;
-			}
-
-			return analyzed;
-		}
-
-		private static DuAnalysedCode TypiseInstructions(DuAnalysedCode analyzed)
-		{
-			var constructors = definedInstructions.Select(s => s.GetConstructor(Array.Empty<Type>())).ToList();
-			var names = definedInstructions.Select(s => s.GetField("CODEDEFINE", BindingFlags.Static | BindingFlags.Public).GetValue(null) as string).ToList();
-			var instructions = analyzed.Executables.Select((s, i) => (s as NullInstruction, i)).Where(s => s.Item1 != null).ToList();
-
-			for (int i = 0; i < instructions.Count; i++)
-			{
-				var instruction = instructions[i].Item1;
-
-				var index = names.FindIndex(s => MatchCodeObjectNameWithPattern(s, instruction.StringForm));
-				analyzed.Executables[instructions[i].i] = constructors[index].Invoke(Array.Empty<object>()) as CodeBlock;
-			}
-
-			return analyzed;
-		}
-
 		private static DuAnalysedCode AliasReplace(DuAnalysedCode analyzed)
 		{
 			return analyzed;
 		}
 
-		private static DuAnalysedCode BlockSplitting(DuCode code)
+		private static DuAnalysedCode BlockSplitingAndTypping(DuCode code)
 		{
+			var instConstructors = definedInstructions.Select(s => s.GetConstructor(Array.Empty<Type>())).ToList();
+			var instNames = definedInstructions.Select(s => s.GetField("CODEDEFINE", BindingFlags.Static | BindingFlags.Public).GetValue(null) as string).ToList();
+
+			var blocksConstructors = definedBlocks.Select(s => s.GetConstructor(new Type[] { typeof(IEnumerable<CodeExecutable>) })).ToList();
+			var blocksNames = definedBlocks.Select(s => s.GetField("CODEDEFINE", BindingFlags.Static | BindingFlags.Public).GetValue(null) as string).ToList();
+
 			var result = new NullBlock(Array.Empty<CodeExecutable>(), null);
 
 			var blockStack = new Stack<CodeBlock>(4);
@@ -103,7 +72,7 @@ namespace DuMir
 
 			var lines = code.Text.Split("\r\n");
 
-			for (int i = 0; i < lines.Length; i++)
+			for(int i = 0; i < lines.Length; i++)
 			{
 				var line = lines[i];
 
@@ -111,7 +80,10 @@ namespace DuMir
 
 				if(line == StartBlockString)
 				{
-					blockStack.Push(new NullBlock(Array.Empty<CodeExecutable>(), lines[i - 1]));
+					string[] innerCodeAttrs = null;
+					var block = blocksConstructors[blocksNames.FindIndex(s => MatchCodeObjectNameWithPattern(lines[i - 1], s, out innerCodeAttrs))].Invoke(new object[] { Array.Empty<CodeExecutable>() }) as CodeBlock;
+					block.InnerCodeAttributes = innerCodeAttrs;
+					blockStack.Push(block);
 				}
 				else if(line == EndBlockString)
 				{
@@ -119,7 +91,11 @@ namespace DuMir
 				}
 				else
 				{
-					blockStack.Peek().Executables.Add(new NullInstruction(line));
+					string[] innerCodeAttrs = null;
+					var inst = instConstructors[instNames.FindIndex(s => MatchCodeObjectNameWithPattern(line, s, out innerCodeAttrs))].Invoke(Array.Empty<object>()) as CodeInstruction;
+					inst.DefineBlock = blockStack.Peek();
+					inst.InnerCodeAttributes = innerCodeAttrs;
+					blockStack.Peek().Executables.Add(inst);
 				}
 			}
 
@@ -135,7 +111,7 @@ namespace DuMir
 			while(code.Text.Contains("\r\n\r\n") || code.Text.Contains("\t") || code.Text.Contains("  "))
 			{
 				//White spaces
-				code.Text = string.Join("\n", code.Text.Split('\n').Select(s => s.Trim()));
+				//code.Text = string.Join("\n", code.Text.Split('\n').Select(s => s.Trim()));
 
 				//Lines shortify
 				code.Text = code.Text.Replace("\r\n\r\n", "\r\n");
@@ -148,14 +124,16 @@ namespace DuMir
 			}
 		}
 
-		private static bool MatchCodeObjectNameWithPattern(string name, string pattern)
+		private static bool MatchCodeObjectNameWithPattern(string name, string pattern, out string[] attrs)
 		{
 			var parts = pattern.Split("#");
 			StringBuilder builder = new StringBuilder(name.Length);
+			attrs = new string[pattern.Count(s => s == '#')];
 
 			string currentPart = parts[0];
 			parts = parts[1..];
-
+			int i = 1;
+				
 			while(true)
 			{
 				if(name.Length == 0) return false;
@@ -165,12 +143,19 @@ namespace DuMir
 
 				if(builder.ToString().Contains(currentPart))
 				{
-					currentPart = parts[0];
-					parts = parts[1..];
+					if(i >= 2) attrs[i - 2] = builder.ToString().Substring(0, builder.ToString().Length - currentPart.Length);
+					currentPart = parts[i - 1];
 					builder.Clear();
 
-					if(parts.Length == 0) return true;
+					i++;
+
+					if(parts.Length == i - 1)
+					{
+						attrs[^1] = name;
+						return true;
+					}
 				}
+
 			}
 		}
 	}

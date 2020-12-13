@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace DuMir.Models.Code
 {
-	abstract class CodeInstruction : CodeExecutable
+	class ProgramFunction
 	{
-		public CodeBlock DefineBlock { get; set; }
 
-
-		protected CodeInstruction() : base()
-		{
-
-		}
 	}
 }

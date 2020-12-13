@@ -10,7 +10,7 @@ namespace DuMir.Models.Code
 	class DuAnalyzedProject : Model
 	{
 		private DuProject baseProject;
-		private IList<DuAnalysedCode> analysedCode;
+		private IList<DuAnalysedCode> analysedCode = new List<DuAnalysedCode>();
 
 		public DuProject BaseProject { get => baseProject; set { OnPropertyChanging(); baseProject = value; OnPropertyChanged(); } }
 

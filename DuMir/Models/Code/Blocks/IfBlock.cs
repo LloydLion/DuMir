@@ -17,11 +17,11 @@ namespace DuMir.Models.Code.Blocks
 		}
 
 
-		public override void Execute()
+		public override void Execute(InterpretatorContext ctx)
 		{
-			if(ctx.GetInnerVariable<bool>(0).GetValue())
+			if((bool)ctx.Variables.Single(s => s.Name == InnerCodeAttributes[0]).CurrentValue == true)
 			{
-				base.Execute();
+				base.Execute(ctx);
 			}
 		}
 	}

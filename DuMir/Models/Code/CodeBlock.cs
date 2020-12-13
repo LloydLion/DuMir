@@ -18,9 +18,9 @@ namespace DuMir.Models.Code
 		}
 
 
-		public override void Execute()
+		public override void Execute(InterpretatorContext ctx)
 		{
-			Executables.InvokeForAll(s => s.Execute());
+			Executables.InvokeForAll(s => s.Execute(ctx));
 		}
 	}
 }

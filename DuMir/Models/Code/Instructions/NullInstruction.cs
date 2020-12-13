@@ -14,6 +14,6 @@ namespace DuMir.Models.Code.Instructions
 		public NullInstruction(string instruction) : base() { StringForm = instruction; }
 
 
-		public override void Execute() { }
+		public override void Execute(InterpretatorContext ctx) { }
 	}
 }

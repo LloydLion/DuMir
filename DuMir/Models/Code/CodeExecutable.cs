@@ -9,16 +9,19 @@ namespace DuMir.Models.Code
 {
 	abstract class CodeExecutable : Model
 	{
+		public string[] InnerCodeAttributes { get; set; }
+
+
 		public CodeExecutable() { }
 
 
 		public override string ToString()
 		{
-			return $"EXECUTABLE: " + (this as object).ToString();
+			return $"EXECUTABLE: " + GetType().ToString();
 		}
 
-		public abstract void Execute();
+		public abstract void Execute(InterpretatorContext ctx);
 
-		public virtual void OnStart() { }
+		public virtual void OnStart(InterpretatorContext ctx) { }
 	}
 }
