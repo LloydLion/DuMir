@@ -1,4 +1,5 @@
-﻿using StandardLibrary.Other;
+﻿using StandardLibrary.Functions;
+using StandardLibrary.Other;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,26 @@ namespace DuMir.Models.Code
 		}
 
 
+		public virtual IList<CodeExecutable> GetExecutablesForBlockExecute(InterpretatorContext ctx) => Executables;
+
 		public override void Execute(InterpretatorContext ctx)
 		{
-			Executables.InvokeForAll(s => s.Execute(ctx));
+			GetExecutablesForBlockExecute(ctx).InvokeForAll(s => s.Execute(ctx));
+		}
+
+		public override void OnStart(InterpretatorContext ctx)
+		{
+			ctx.ExecutablesIterators.Add(-1);
+
+			for(int i = 0; i < Executables.Count; i++)
+			{
+				var exec = Executables[i];
+				ctx.ExecutablesIterators[^1] = i;
+
+				exec.OnStart(ctx);
+			}
+
+			ctx.ExecutablesIterators.RemoveAt(ctx.ExecutablesIterators.Count - 1);
 		}
 	}
 }

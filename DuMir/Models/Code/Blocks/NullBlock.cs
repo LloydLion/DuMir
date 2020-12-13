@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StandardLibrary.Functions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,11 +13,5 @@ namespace DuMir.Models.Code.Blocks
 
 
 		public NullBlock(IEnumerable<CodeExecutable> executables, string blockName) : base(executables) { StringForm = blockName; }
-
-
-		public override void Execute(InterpretatorContext ctx)
-		{
-			base.Execute(ctx);
-		}
 	}
 }

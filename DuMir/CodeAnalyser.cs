@@ -26,7 +26,10 @@ namespace DuMir
 		public readonly static Type[] definedInstructions = new Type[]
 		{
 			typeof(SumInstruction),
-			typeof(DefineVariable)
+			typeof(DefineVariable),
+			typeof(CreateBookmark),
+			typeof(GotoBookmark),
+			typeof(AssignVariableValue)
 		};
 
 		
@@ -83,6 +86,7 @@ namespace DuMir
 					string[] innerCodeAttrs = null;
 					var block = blocksConstructors[blocksNames.FindIndex(s => MatchCodeObjectNameWithPattern(lines[i - 1], s, out innerCodeAttrs))].Invoke(new object[] { Array.Empty<CodeExecutable>() }) as CodeBlock;
 					block.InnerCodeAttributes = innerCodeAttrs;
+					blockStack.Peek().Executables.Add(block);
 					blockStack.Push(block);
 				}
 				else if(line == EndBlockString)
@@ -121,6 +125,12 @@ namespace DuMir
 
 				//Spaces shortify
 				code.Text = code.Text.Replace("  ", " ");
+			}
+
+			if(string.IsNullOrWhiteSpace(code.Text.Split("\r\n")[^1]))
+			{
+				var lines = code.Text.Split("\r\n");
+				code.Text = string.Join("\r\n", lines[..^1]);
 			}
 		}
 

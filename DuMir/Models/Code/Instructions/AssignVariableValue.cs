@@ -7,16 +7,10 @@ using System.Threading.Tasks;
 
 namespace DuMir.Models.Code.Instructions
 {
-	class DefineVariable : CodeInstruction
+	class AssignVariableValue : CodeInstruction
 	{
-		public const string CODEDEFINE = "define $# = |#|#| #";
+		public const string CODEDEFINE = "$# = |#|#| #";
 
-
-		public override void OnStart(InterpretatorContext ctx)
-		{
-			var var = new ProgramVariable(InnerCodeAttributes[0], DefineBlock);
-			ctx.Variables.Add(var);
-		}
 
 		public override void Execute(InterpretatorContext ctx)
 		{
