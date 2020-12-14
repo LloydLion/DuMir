@@ -14,31 +14,34 @@ namespace DuMir
 		int rootDefinitionIndex = -1;
 
 
-		public void Run(DuAnalyzedProject project)
+		public async void Run(DuAnalyzedProject project)
 		{
-			InterpretatorContext ctx = new InterpretatorContext()
+			await Task.Run(() =>
 			{
-				Project = project
-			};
-
-			project.AnalysedCode.InvokeForAll(s =>
-			{
-				ctx.ExecutablesIterators.Add(-1);
-
-				for (int i = 0; i < s.Executables.Count; i++)
+				InterpretatorContext ctx = new InterpretatorContext()
 				{
-					ctx.ExecutablesIterators[0] = i;
-					s.Executables[i].OnStart(ctx);
-				}
+					Project = project
+				};
 
-				ctx.ExecutablesIterators.RemoveAt(0);
+				project.AnalysedCode.InvokeForAll(s =>
+				{
+					ctx.ExecutablesIterators.Add(-1);
+
+					for (int i = 0; i < s.Executables.Count; i++)
+					{
+						ctx.ExecutablesIterators[0] = i;
+						s.Executables[i].OnStart(ctx);
+					}
+
+					ctx.ExecutablesIterators.RemoveAt(0);
+				});
+
+				var main = project.AnalysedCode[0];
+
+				ctx.ExecutablesIterators.Clear();
+
+				Execute(new NullBlock(main.Executables, null), ctx);
 			});
-
-			var main = project.AnalysedCode[0];
-
-			ctx.ExecutablesIterators.Clear();
-
-			Execute(new NullBlock(main.Executables, null), ctx);
 		}
 
 		public void Execute(CodeExecutable executable, InterpretatorContext ctx, int recursionDepth = 0, bool isTransitUppingStade = false)
@@ -89,6 +92,13 @@ namespace DuMir
 						{
 							i = ctx.ExecutablesIterators[rootDefinitionIndex] - 1; //i++ | look upper into cycle definition
 							isTransitUppingStade = true;
+
+							if(ctx.ExecutablesIterators.Count - 2 < recursionDepth)
+							{
+								isTransitUppingStade = false;
+								ctx.IsExecutablesIteratorsChanged = false;
+								rootDefinitionIndex = -1;
+							}
 						}
 						else return;
 					}

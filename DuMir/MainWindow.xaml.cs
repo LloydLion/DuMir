@@ -14,12 +14,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace DuMir
 {
 	partial class MainWindow : Window
 	{
 		private StringBuilder inputText = new StringBuilder();
+		private StringBuilder prepareOutputText = new StringBuilder();
+		private DispatcherTimer timer = new DispatcherTimer();
 
 
 		public MainWindow()
@@ -34,30 +37,41 @@ namespace DuMir
 			{
 				consoleTextBox.ScrollToEnd();
 			};
+
+			timer.Interval = new TimeSpan(2000000);
+			timer.Tick += Timer_Tick;
+			timer.Start();
 		}
 
-		private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+
+		private void Timer_Tick(object sender, EventArgs e)
+		{
+			consoleTextBox.AppendText(prepareOutputText.ToString());
+			prepareOutputText.Clear();
+		}
+
+		private async void MainWindow_KeyDown(object sender, KeyEventArgs e)
 		{
 			if(e.Key == Key.Enter && e.IsDown)
 			{
-				inputText.Append(consoleInputTextBox.Text);
+				inputText.Append(consoleInputTextBox.Text + "\n");
 				Logger.LogMessage(consoleInputTextBox.Text, Logger.LogLevel.UserInput);
-				Logger.LogMessage("Privet Mir", Logger.LogLevel.Info);
 				consoleInputTextBox.Clear();
 			}
 
 			if(e.Key == Key.Tab && e.IsDown)
 			{
-				var project = new PreLoader().Run();
-				project = new PostLoader().Run(project);
-				var analysedProject = new CodeAnalyser().Run(project);
+				var project = await new PreLoader().Run();
+				project = await new PostLoader().Run(project);
+				var analysedProject = await new CodeAnalyser().Run(project);
+				ConsoleHandler.Global.WriteLine(new string('-', 30));
 				new Interpretator().Run(analysedProject);
 			}
 		}
 
 		private void WriteToConsole(string arg)
 		{
-			consoleTextBox.Text += arg;
+			prepareOutputText.Append(arg);
 		}
 
 		private string ReadFromConsole(int length)

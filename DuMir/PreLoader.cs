@@ -11,20 +11,23 @@ namespace DuMir
 {
 	class PreLoader
 	{
-		public DuProject Run()
+		public async Task<DuProject> Run()
 		{
-			Logger.LogMessage("PRELOADING STADE START", Logger.LogLevel.Warning);
+			return await Task.Run(() =>
+			{
+				Logger.LogMessage("PRELOADING STADE START", Logger.LogLevel.Warning);
 
-			var project = JsonConvert.DeserializeObject<DuProject>(File.ReadAllText(".\\executable.duproj"));
-			Logger.LogMessage("Project Base generated", Logger.LogLevel.Info);
+				var project = JsonConvert.DeserializeObject<DuProject>(File.ReadAllText(".\\executable.duproj"));
+				Logger.LogMessage("Project Base generated", Logger.LogLevel.Info);
 
-			LookUpProjectModules(project, ".");
-			Logger.LogMessage("Modules attached to project", Logger.LogLevel.Info);
+				LookUpProjectModules(project, ".");
+				Logger.LogMessage("Modules attached to project", Logger.LogLevel.Info);
 
-			LookUpAllModulesAndDepartmentsOfProject(project);
+				LookUpAllModulesAndDepartmentsOfProject(project);
 
-			Logger.LogMessage("PRELOADING STADE END", Logger.LogLevel.Warning);
-			return project;
+				Logger.LogMessage("PRELOADING STADE END", Logger.LogLevel.Warning);
+				return project;
+			});
 		}
 
 		private static void LookUpProjectModules(DuProject project, string basePath)

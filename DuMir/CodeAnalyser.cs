@@ -2,6 +2,7 @@
 using DuMir.Models.Code;
 using DuMir.Models.Code.Blocks;
 using DuMir.Models.Code.Instructions;
+using DuMir.Models.Code.Instructions.System;
 using DuMir.Models.Files;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,8 @@ namespace DuMir
 
 		public readonly static Type[] definedBlocks = new Type[]
 		{
-			typeof(IfBlock)
+			typeof(IfBlock),
+			typeof(NLB)
 		};
 
 		public readonly static Type[] definedInstructions = new Type[]
@@ -29,25 +31,30 @@ namespace DuMir
 			typeof(DefineVariable),
 			typeof(CreateBookmark),
 			typeof(GotoBookmark),
-			typeof(AssignVariableValue)
+			typeof(AssignVariableValue),
+			typeof(PrintToConsole),
+			typeof(Delay)
 		};
 
 		
-		public DuAnalyzedProject Run(DuProject project)
+		public async Task<DuAnalyzedProject> Run(DuProject project)
 		{
-			var analyzedProject = new DuAnalyzedProject(project);
-
-			foreach (var item in project.CodeFiles)
+			return await Task.Run(() =>
 			{
-				NonLecsicAnalys(item);
-				var analyzed = BlockSplitingAndTypping(item);
-				analyzed = AliasReplace(analyzed);
-				analyzedProject.AnalysedCode.Add(analyzed); 
-			}
+				var analyzedProject = new DuAnalyzedProject(project);
 
-			analyzedProject = FinalizeAnalyse(analyzedProject);
+				foreach (var item in project.CodeFiles)
+				{
+					NonLecsicAnalys(item);
+					var analyzed = BlockSplitingAndTypping(item);
+					analyzed = AliasReplace(analyzed);
+					analyzedProject.AnalysedCode.Add(analyzed);
+				}
 
-			return analyzedProject;
+				analyzedProject = FinalizeAnalyse(analyzedProject);
+
+				return analyzedProject;
+			});
 		}
 
 		private static DuAnalyzedProject FinalizeAnalyse(DuAnalyzedProject analyzedProject)
@@ -139,6 +146,8 @@ namespace DuMir
 			var parts = pattern.Split("#");
 			StringBuilder builder = new StringBuilder(name.Length);
 			attrs = new string[pattern.Count(s => s == '#')];
+
+			if (name == pattern && attrs.Length == 0) return true;
 
 			string currentPart = parts[0];
 			parts = parts[1..];

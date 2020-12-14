@@ -19,7 +19,8 @@ namespace DuMir
 			Info,
 			Warning,
 			Error,
-			UserInput
+			UserInput,
+			Applitation
 		}
 	}
 }

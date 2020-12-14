@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
         
         <TextBox Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                 Margin="25 0" x:Name="consoleInputTextBox"/>
+                 Margin="25 0" x:Name="consoleInputTextBox" Background="DarkGray"/>
 
         <TextBox Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="15" Background="DarkGray"
                  x:Name="consoleTextBox" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
