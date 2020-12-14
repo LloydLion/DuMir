@@ -9,8 +9,33 @@ namespace DuMir.Models.Code.Instructions
 {
 	class AssignVariableValue : CodeInstruction
 	{
-		public const string CODEDEFINE = "$# = |#|#| #";
+		public const string CODEDEFINE =	"$# = |#|#| #\uF13C" +
+											"$# = |#| #";
 
+
+		public override void OnStart(InterpretatorContext ctx)
+		{
+			if(SelectedVariant == 1)
+			{
+				var copy = InnerCodeAttributes;
+				InnerCodeAttributes = new string[4];
+				InnerCodeAttributes[0] = copy[0];
+				InnerCodeAttributes[3] = copy[2];
+
+				var pClass = "";
+				var pMethod = "Parse";
+
+				switch(copy[1])
+				{
+					case "number": pClass = "System.Decimal"; break;
+					case "string": pClass = "Pure"; pMethod = "Value"; break;
+					case "bool": pClass = "System.Boolean"; break;
+				}
+
+				InnerCodeAttributes[1] = pClass;
+				InnerCodeAttributes[2] = pMethod;
+			}
+		}
 
 		public override void Execute(InterpretatorContext ctx)
 		{

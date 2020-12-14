@@ -10,13 +10,35 @@ namespace DuMir.Models.Code.Instructions
 	class DefineVariable : CodeInstruction
 	{
 		public const string CODEDEFINE =	"define $# = |#|#| #\uF13C" +
-											"define $#";
+											"define $#\uF13C" +
+											"define $# = |#| #";
 
 
 		public override void OnStart(InterpretatorContext ctx)
 		{
 			var var = new ProgramVariable(InnerCodeAttributes[0], DefineBlock);
 			ctx.Variables.Add(var);
+
+			if (SelectedVariant == 2)
+			{
+				var copy = InnerCodeAttributes;
+				InnerCodeAttributes = new string[4];
+				InnerCodeAttributes[0] = copy[0];
+				InnerCodeAttributes[3] = copy[2];
+
+				var pClass = "";
+				var pMethod = "Parse";
+
+				switch (copy[1])
+				{
+					case "number": pClass = "System.Decimal"; break;
+					case "string": pClass = "Pure"; pMethod = "Value"; break;
+					case "bool": pClass = "System.Boolean"; break;
+				}
+
+				InnerCodeAttributes[1] = pClass;
+				InnerCodeAttributes[2] = pMethod;
+			}
 		}
 
 		public override void Execute(InterpretatorContext ctx)
