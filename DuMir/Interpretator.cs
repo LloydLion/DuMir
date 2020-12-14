@@ -18,6 +18,9 @@ namespace DuMir
 		{
 			await Task.Run(() =>
 			{
+				Logger.LogMessage("INTERPRETATING...", Logger.LogLevel.Warning);
+				ConsoleHandler.Global.WriteLine(new string('-', 30));
+
 				InterpretatorContext ctx = new InterpretatorContext()
 				{
 					Project = project
@@ -41,6 +44,8 @@ namespace DuMir
 				ctx.ExecutablesIterators.Clear();
 
 				Execute(new NullBlock(main.Executables, null), ctx);
+
+				Logger.LogMessage("PROGRAM END", Logger.LogLevel.Warning);
 			});
 		}
 

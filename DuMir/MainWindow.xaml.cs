@@ -64,7 +64,6 @@ namespace DuMir
 				var project = await new PreLoader().Run();
 				project = await new PostLoader().Run(project);
 				var analysedProject = await new CodeAnalyser().Run(project);
-				ConsoleHandler.Global.WriteLine(new string('-', 30));
 				new Interpretator().Run(analysedProject);
 			}
 		}
