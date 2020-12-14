@@ -39,38 +39,35 @@ namespace DuMir
 		};
 
 		
-		public async Task<DuAnalyzedProject> Run(DuProject project)
+		public DuAnalyzedProject Run(DuProject project)
 		{
-			return await Task.Run(() =>
+			Logger.LogMessage("ANALYSING STADE START", Logger.LogLevel.Warning);
+
+			var analyzedProject = new DuAnalyzedProject(project);
+
+			foreach (var item in project.CodeFiles)
 			{
-				Logger.LogMessage("ANALYSING STADE START", Logger.LogLevel.Warning);
+				Logger.LogMessage("Analysing File at " + item.FileInfo.Path, Logger.LogLevel.Info);
 
-				var analyzedProject = new DuAnalyzedProject(project);
+				NonLecsicAnalys(item);
+				Logger.LogMessage("File prepared to analize", Logger.LogLevel.Info);
 
-				foreach (var item in project.CodeFiles)
-				{
-					Logger.LogMessage("Analysing File at " + item.FileInfo.Path, Logger.LogLevel.Info);
+				var analyzed = BlockSplitingAndTypping(item);
+				Logger.LogMessage("Block and Instructions defined", Logger.LogLevel.Info);
 
-					NonLecsicAnalys(item);
-					Logger.LogMessage("File prepared to analize", Logger.LogLevel.Info);
+				analyzed = AliasReplace(analyzed);
+				Logger.LogMessage("Alias replace complite", Logger.LogLevel.Info);
 
-					var analyzed = BlockSplitingAndTypping(item);
-					Logger.LogMessage("Block and Instructions defined", Logger.LogLevel.Info);
+				analyzedProject.AnalysedCode.Add(analyzed);
+				Logger.LogMessage("File analize complite", Logger.LogLevel.Info);
+			}
 
-					analyzed = AliasReplace(analyzed);
-					Logger.LogMessage("Alias replace complite", Logger.LogLevel.Info);
+			Logger.LogMessage("Finalizing...", Logger.LogLevel.Info);
+			analyzedProject = FinalizeAnalyse(analyzedProject);
 
-					analyzedProject.AnalysedCode.Add(analyzed);
-					Logger.LogMessage("File analize complite", Logger.LogLevel.Info);
-				}
+			Logger.LogMessage("ANALYSING STADE END", Logger.LogLevel.Warning);
 
-				Logger.LogMessage("Finalizing...", Logger.LogLevel.Info);
-				analyzedProject = FinalizeAnalyse(analyzedProject);
-
-				Logger.LogMessage("ANALYSING STADE END", Logger.LogLevel.Warning);
-
-				return analyzedProject;
-			});
+			return analyzedProject;
 		}
 
 		private static DuAnalyzedProject FinalizeAnalyse(DuAnalyzedProject analyzedProject)

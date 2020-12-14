@@ -14,39 +14,36 @@ namespace DuMir
 		int rootDefinitionIndex = -1;
 
 
-		public async void Run(DuAnalyzedProject project)
+		public void Run(DuAnalyzedProject project)
 		{
-			await Task.Run(() =>
+			Logger.LogMessage("INTERPRETATING...", Logger.LogLevel.Warning);
+			ConsoleHandler.Global.WriteLine(new string('-', 30));
+
+			InterpretatorContext ctx = new InterpretatorContext()
 			{
-				Logger.LogMessage("INTERPRETATING...", Logger.LogLevel.Warning);
-				ConsoleHandler.Global.WriteLine(new string('-', 30));
+				Project = project
+			};
 
-				InterpretatorContext ctx = new InterpretatorContext()
+			project.AnalysedCode.InvokeForAll(s =>
+			{
+				ctx.ExecutablesIterators.Add(-1);
+
+				for (int i = 0; i < s.Executables.Count; i++)
 				{
-					Project = project
-				};
+					ctx.ExecutablesIterators[0] = i;
+					s.Executables[i].OnStart(ctx);
+				}
 
-				project.AnalysedCode.InvokeForAll(s =>
-				{
-					ctx.ExecutablesIterators.Add(-1);
-
-					for (int i = 0; i < s.Executables.Count; i++)
-					{
-						ctx.ExecutablesIterators[0] = i;
-						s.Executables[i].OnStart(ctx);
-					}
-
-					ctx.ExecutablesIterators.RemoveAt(0);
-				});
-
-				var main = project.AnalysedCode[0];
-
-				ctx.ExecutablesIterators.Clear();
-
-				Execute(new NullBlock(main.Executables, null), ctx);
-
-				Logger.LogMessage("PROGRAM END", Logger.LogLevel.Warning);
+				ctx.ExecutablesIterators.RemoveAt(0);
 			});
+
+			var main = project.AnalysedCode[0];
+
+			ctx.ExecutablesIterators.Clear();
+
+			Execute(new NullBlock(main.Executables, null), ctx);
+
+			Logger.LogMessage("PROGRAM END", Logger.LogLevel.Warning);
 		}
 
 		public void Execute(CodeExecutable executable, InterpretatorContext ctx, int recursionDepth = 0, bool isTransitUppingStade = false)

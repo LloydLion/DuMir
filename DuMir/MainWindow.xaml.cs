@@ -21,8 +21,8 @@ namespace DuMir
 	partial class MainWindow : Window
 	{
 		private StringBuilder inputText = new StringBuilder();
-		private StringBuilder prepareOutputText = new StringBuilder();
-		private DispatcherTimer timer = new DispatcherTimer();
+		private readonly StringBuilder prepareOutputText = new StringBuilder();
+		private readonly DispatcherTimer timer = new DispatcherTimer();
 
 
 		public MainWindow()
@@ -31,14 +31,15 @@ namespace DuMir
 
 			ConsoleHandler.InitGlobal(new ConsoleHandler(ReadFromConsole, WriteToConsole));
 
-			Logger.LogMessage("Privet Mir", Logger.LogLevel.Warning);
+			Logger.LogMessage("Welcome to DuMir Interpretator", Logger.LogLevel.Info);
+			Logger.LogMessage("Press [TAB] to run program", Logger.LogLevel.Info);
 
 			consoleTextBox.TextChanged += (sender, e) =>
 			{
 				consoleTextBox.ScrollToEnd();
 			};
 
-			timer.Interval = new TimeSpan(2000000);
+			timer.Interval = new TimeSpan(200000);
 			timer.Tick += Timer_Tick;
 			timer.Start();
 		}
@@ -59,12 +60,15 @@ namespace DuMir
 				consoleInputTextBox.Clear();
 			}
 
-			if(e.Key == Key.Tab && e.IsDown)
+			if (e.Key == Key.Tab && e.IsDown)
 			{
-				var project = await new PreLoader().Run();
-				project = await new PostLoader().Run(project);
-				var analysedProject = await new CodeAnalyser().Run(project);
-				new Interpretator().Run(analysedProject);
+				await Task.Run(() =>
+				{
+					var project = new PreLoader().Run();
+					project = new PostLoader().Run(project);
+					var analysedProject = new CodeAnalyser().Run(project);
+					new Interpretator().Run(analysedProject);
+				});
 			}
 		}
 
