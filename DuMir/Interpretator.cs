@@ -107,41 +107,6 @@ namespace DuMir
 				ctx.ExecutablesIterators.RemoveAt(ctx.ExecutablesIterators.Count - 1);
 			}
 			else executable.Execute(ctx);
-
-
-			//if(executable is CodeBlock block)
-			//{
-			//	var myLevel = ctx.ExecutablesIterators[^1];
-			//	var myDepth = ctx.ExecutablesIterators.Count;
-			//	ctx.ExecutablesIterators.Add(-1);
-
-			//	var execs = block.GetExecutablesForBlockExecute(ctx);
-
-			//	for(int i = 0; i < execs.Count; i++)
-			//	{
-			//		ctx.ExecutablesIterators[^1] = i;
-
-			//		Execute(execs[i], ctx);
-
-			//		if(ctx.IsExecutablesIteratorsChanged == true)
-			//		{
-			//			if(ctx.ExecutablesIterators[^2] == myLevel)
-			//			{
-			//				i = ctx.ExecutablesIterators[^1];
-			//				execs = block.Executables;
-			//				if(ctx.ExecutablesIterators.Count == myDepth) ctx.IsExecutablesIteratorsChanged = false;
-			//			}
-			//			else
-			//			{
-			//				ctx.ExecutablesIterators.RemoveAt(ctx.ExecutablesIterators.Count - 1);
-			//				return;
-			//			}
-			//		}
-			//	}
-
-			//	ctx.ExecutablesIterators.RemoveAt(ctx.ExecutablesIterators.Count - 1);
-			//}
-			//else executable.Execute(ctx);
 		}
 	}
 }

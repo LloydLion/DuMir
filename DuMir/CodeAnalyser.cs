@@ -27,13 +27,15 @@ namespace DuMir
 
 		public readonly static Type[] definedInstructions = new Type[]
 		{
-			typeof(SumInstruction),
+			typeof(NumberOperationsInstructions),
 			typeof(DefineVariable),
 			typeof(CreateBookmark),
 			typeof(GotoBookmark),
 			typeof(AssignVariableValue),
 			typeof(PrintToConsole),
-			typeof(Delay)
+			typeof(Delay),
+			typeof(LogicOperators),
+			typeof(ReadLineFromConsole)
 		};
 
 		
@@ -91,8 +93,14 @@ namespace DuMir
 				if(line == StartBlockString)
 				{
 					string[] innerCodeAttrs = null;
-					var block = blocksConstructors[blocksNames.FindIndex(s => MatchCodeObjectNameWithPattern(lines[i - 1], s, out innerCodeAttrs))].Invoke(new object[] { Array.Empty<CodeExecutable>() }) as CodeBlock;
+					int selectedVariant = -1;
+
+					var block = blocksConstructors[blocksNames.FindIndex(s => MatchCodeObjectNameWithPattern(lines[i - 1], s, out innerCodeAttrs, out selectedVariant))].Invoke(new object[] { Array.Empty<CodeExecutable>() }) as CodeBlock;
+
+					block.DefineBlock = blockStack.Peek();
 					block.InnerCodeAttributes = innerCodeAttrs;
+					block.SelectedVariant = selectedVariant;
+
 					blockStack.Peek().Executables.Add(block);
 					blockStack.Push(block);
 				}
@@ -103,9 +111,14 @@ namespace DuMir
 				else
 				{
 					string[] innerCodeAttrs = null;
-					var inst = instConstructors[instNames.FindIndex(s => MatchCodeObjectNameWithPattern(line, s, out innerCodeAttrs))].Invoke(Array.Empty<object>()) as CodeInstruction;
+					int selectedVariant = -1;
+
+					var inst = instConstructors[instNames.FindIndex(s => MatchCodeObjectNameWithPattern(line, s, out innerCodeAttrs, out selectedVariant))].Invoke(Array.Empty<object>()) as CodeInstruction;
+
 					inst.DefineBlock = blockStack.Peek();
 					inst.InnerCodeAttributes = innerCodeAttrs;
+					inst.SelectedVariant = selectedVariant;
+
 					blockStack.Peek().Executables.Add(inst);
 				}
 			}
@@ -141,41 +154,55 @@ namespace DuMir
 			}
 		}
 
-		private static bool MatchCodeObjectNameWithPattern(string name, string pattern, out string[] attrs)
+		private static bool MatchCodeObjectNameWithPattern(string name, string pattern, out string[] attrs, out int selectedVariant)
 		{
-			var parts = pattern.Split("#");
-			StringBuilder builder = new StringBuilder(name.Length);
-			attrs = new string[pattern.Count(s => s == '#')];
+			var patterns = pattern.Split('\uF13C');
+			var nameBack = name;
 
-			if (name == pattern && attrs.Length == 0) return true;
-
-			string currentPart = parts[0];
-			parts = parts[1..];
-			int i = 1;
-				
-			while(true)
+			for (int j = 0; j < patterns.Length; j++)
 			{
-				if(name.Length == 0) return false;
+				name = nameBack;
+				selectedVariant = j;
+				var patternVariant = patterns[j];
 
-				builder.Append(name[0]);
-				name = name[1..];
+				var parts = patternVariant.Split("#");
+				StringBuilder builder = new StringBuilder(name.Length);
+				attrs = new string[patternVariant.Count(s => s == '#')];
 
-				if(builder.ToString().Contains(currentPart))
+				if (name == patternVariant && attrs.Length == 0) return true;
+
+				string currentPart = parts[0];
+				parts = parts[1..];
+				int i = 1;
+				
+				while(true)
 				{
-					if(i >= 2) attrs[i - 2] = builder.ToString().Substring(0, builder.ToString().Length - currentPart.Length);
-					currentPart = parts[i - 1];
-					builder.Clear();
+					if(name.Length == 0) break;
 
-					i++;
+					builder.Append(name[0]);
+					name = name[1..];
 
-					if(parts.Length == i - 1)
+					if(builder.ToString().Contains(currentPart))
 					{
-						attrs[^1] = name;
-						return true;
-					}
-				}
+						if(i >= 2) attrs[i - 2] = builder.ToString().Substring(0, builder.ToString().Length - currentPart.Length);
+						currentPart = parts[i - 1];
+						builder.Clear();
 
+						i++;
+
+						if(parts.Length == i - 1)
+						{
+							attrs[^1] = name;
+							return true;
+						}
+					}
+
+				}
 			}
+
+			attrs = null;
+			selectedVariant = -1;
+			return false;
 		}
 	}
 }

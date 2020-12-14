@@ -11,6 +11,10 @@ namespace DuMir.Models.Code
 	{
 		public string[] InnerCodeAttributes { get; set; }
 
+		public int SelectedVariant { get; set; }
+
+		public CodeBlock DefineBlock { get; set; }
+
 
 		public CodeExecutable() { }
 

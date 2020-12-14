@@ -28,5 +28,22 @@ namespace DuMir
 		}
 
 		public void WriteLine(string msg) => writeMethod(msg + "\n");
+
+		public string ReadLine()
+		{
+			Logger.LogMessage("[CONSOLE] Getting user input", Logger.LogLevel.Info);
+			StringBuilder result = new StringBuilder();
+
+			while(true)
+			{
+				var symbol = readMethod(1)[0];
+				if(symbol == '\n')
+					break;
+				else
+					result.Append(symbol);
+			}
+
+			return result.ToString();
+		}
 	}
 }

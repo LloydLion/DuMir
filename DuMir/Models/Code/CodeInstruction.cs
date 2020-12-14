@@ -8,9 +8,6 @@ namespace DuMir.Models.Code
 {
 	abstract class CodeInstruction : CodeExecutable
 	{
-		public CodeBlock DefineBlock { get; set; }
-
-
 		protected CodeInstruction() : base()
 		{
 

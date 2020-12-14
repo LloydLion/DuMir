@@ -9,7 +9,8 @@ namespace DuMir.Models.Code.Instructions
 {
 	class DefineVariable : CodeInstruction
 	{
-		public const string CODEDEFINE = "define $# = |#|#| #";
+		public const string CODEDEFINE =	"define $# = |#|#| #\uF13C" +
+											"define $#";
 
 
 		public override void OnStart(InterpretatorContext ctx)
@@ -20,11 +21,16 @@ namespace DuMir.Models.Code.Instructions
 
 		public override void Execute(InterpretatorContext ctx)
 		{
-			var var = ctx.Variables.Single(s => s.Name == InnerCodeAttributes[0]);
+			if (SelectedVariant == 0)
+			{
 
-			if (InnerCodeAttributes[1] == "Pure" && InnerCodeAttributes[2] == "Value") var.SetValue(InnerCodeAttributes[3]);
-			else var.SetValue(Type.GetType(InnerCodeAttributes[1]).GetMethod(InnerCodeAttributes[2], 0, BindingFlags.Public | BindingFlags.Static, null, default, new Type[] { typeof(string) }, default)
-				.Invoke(null, new object[] { InnerCodeAttributes[3] }));
+				var var = ctx.Variables.Single(s => s.Name == InnerCodeAttributes[0]);
+
+				if (InnerCodeAttributes[1] == "Pure" && InnerCodeAttributes[2] == "Value") var.SetValue(InnerCodeAttributes[3]);
+				else var.SetValue(Type.GetType(InnerCodeAttributes[1]).GetMethod(InnerCodeAttributes[2], genericParameterCount: 0,
+					BindingFlags.Public | BindingFlags.Static, null, default, new Type[] { typeof(string) }, default)
+					.Invoke(null, new object[] { InnerCodeAttributes[3] }));
+			}
 		}
 	}
 }
