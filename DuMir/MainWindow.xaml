@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DuMir" Background="Gray"
-        mc:Ignorable="d" KeyDown="MainWindow_KeyDown"
-        Title="DuMir Interpretator"
+        mc:Ignorable="d" KeyDown="Window_KeyDown"
+        Title="DuMir Interpretator" Loaded="Window_Loaded"
         Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>

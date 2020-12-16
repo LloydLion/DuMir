@@ -9,5 +9,7 @@ namespace DuMir
 	static class Static
 	{
 		public const string BasePath = @".\project\";
+
+		public static Dictionary<string, object> LaunchArguments { get; set; }
 	}
 }

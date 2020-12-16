@@ -43,7 +43,7 @@ namespace DuMir
 
 			Execute(new NullBlock(main.Executables, null), ctx);
 
-			Logger.LogMessage("PROGRAM END", Logger.LogLevel.Warning);
+			Logger.LogMessage("Program has finished", Logger.LogLevel.Console);
 		}
 
 		public void Execute(CodeExecutable executable, InterpretatorContext ctx, int recursionDepth = 0, bool isTransitUppingStade = false)

@@ -31,7 +31,7 @@ namespace DuMir
 
 		public string ReadLine()
 		{
-			Logger.LogMessage("[CONSOLE] Getting user input", Logger.LogLevel.Info);
+			Logger.LogMessage("Getting user input", Logger.LogLevel.Console);
 			StringBuilder result = new StringBuilder();
 
 			while(true)

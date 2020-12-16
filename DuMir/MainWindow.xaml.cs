@@ -31,8 +31,8 @@ namespace DuMir
 
 			ConsoleHandler.InitGlobal(new ConsoleHandler(ReadFromConsole, WriteToConsole));
 
-			Logger.LogMessage("Welcome to DuMir Interpretator", Logger.LogLevel.Info);
-			Logger.LogMessage("Press [TAB] to run program", Logger.LogLevel.Info);
+			Logger.LogMessage("Welcome to DuMir Interpretator", Logger.LogLevel.Console);
+			Logger.LogMessage("Press [TAB] to run program", Logger.LogLevel.Console);
 
 			consoleTextBox.TextChanged += (sender, e) =>
 			{
@@ -50,8 +50,7 @@ namespace DuMir
 			consoleTextBox.AppendText(prepareOutputText.ToString());
 			prepareOutputText.Clear();
 		}
-
-		private async void MainWindow_KeyDown(object sender, KeyEventArgs e)
+		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
 			if(e.Key == Key.Enter && e.IsDown)
 			{
@@ -62,13 +61,26 @@ namespace DuMir
 
 			if (e.Key == Key.Tab && e.IsDown)
 			{
-				await Task.Run(() =>
-				{
-					var project = new PreLoader().Run();
-					project = new PostLoader().Run(project);
-					var analysedProject = new CodeAnalyser().Run(project);
-					new Interpretator().Run(analysedProject);
-				});
+				Run();
+			}
+
+		}
+
+		private async void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			if((bool)Static.LaunchArguments["IsAutoRun"])
+				Logger.LogMessage("Auto run is ENABLED", Logger.LogLevel.Console);
+
+			if((bool)Static.LaunchArguments["EnableDebug"])
+				Logger.LogMessage("Debug is ENABLED", Logger.LogLevel.Console);
+
+			if((bool)Static.LaunchArguments["IsAutoClosing"])
+				Logger.LogMessage("Auto closing is ENABLED", Logger.LogLevel.Console);
+
+			if((bool)Static.LaunchArguments["IsAutoRun"])
+			{
+				await Task.Delay(1500);
+				Run();
 			}
 		}
 
@@ -85,6 +97,24 @@ namespace DuMir
 			inputText = inputText.Remove(0, length);
 
 			return result;
+		}
+
+		private async void Run()
+		{
+			await Task.Run(() =>
+			{
+				var project = new PreLoader().Run();
+				project = new PostLoader().Run(project);
+				var analysedProject = new CodeAnalyser().Run(project);
+				new Interpretator().Run(analysedProject);
+			});
+
+			if((bool)Static.LaunchArguments["IsAutoClosing"])
+			{
+				Logger.LogMessage("Window closing after 3 seconds", Logger.LogLevel.Console);
+				await Task.Delay(3000);
+				Close();
+			}
 		}
 	}
 }

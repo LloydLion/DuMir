@@ -10,6 +10,9 @@ namespace DuMir
 	{
 		public static void LogMessage(string text, LogLevel level)
 		{
+			if((bool)Static.LaunchArguments["EnableDebug"] == false)
+				if (level != LogLevel.Applitation && level != LogLevel.UserInput && level != LogLevel.Console) return;
+
 			ConsoleHandler.Global.WriteLine($"[{new TimeSpan(DateTime.Now.Ticks):hh\\:mm\\:ss}|{level.ToString().ToUpper()}]: " + text);
 		}
 
@@ -20,7 +23,8 @@ namespace DuMir
 			Warning,
 			Error,
 			UserInput,
-			Applitation
+			Applitation,
+			Console
 		}
 	}
 }

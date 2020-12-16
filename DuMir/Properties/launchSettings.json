@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DuMir": {
+      "commandName": "Project",
+      "commandLineArgs": "--auto-run"
+    }
+  }
+}
