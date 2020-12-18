@@ -11,7 +11,10 @@ namespace DuMir
 {
 	class Interpretator
 	{
-		int rootDefinitionIndex = -1;
+		private int rootDefinitionIndex = -1;
+		private bool isTransitUppingStade = false;
+		private int executeRecursionDepth = 0;
+		private InterpretatorContext ctx;
 
 
 		public void Run(DuAnalyzedProject project)
@@ -19,7 +22,7 @@ namespace DuMir
 			Logger.LogMessage("INTERPRETATING...", Logger.LogLevel.Warning);
 			ConsoleHandler.Global.WriteLine(new string('-', 30));
 
-			InterpretatorContext ctx = new InterpretatorContext()
+			ctx = new InterpretatorContext()
 			{
 				Project = project
 			};
@@ -41,12 +44,12 @@ namespace DuMir
 
 			ctx.ExecutablesIterators.Clear();
 
-			Execute(new NullBlock(main.Executables, null), ctx);
+			Execute(new NullBlock(main.Executables, null));
 
 			Logger.LogMessage("Program has finished", Logger.LogLevel.Console);
 		}
 
-		public void Execute(CodeExecutable executable, InterpretatorContext ctx, int recursionDepth = 0, bool isTransitUppingStade = false)
+		public void Execute(CodeExecutable executable)
 		{
 			if(executable is CodeBlock block)
 			{
@@ -57,11 +60,11 @@ namespace DuMir
 
 				int i = 0;
 				if (isTransitUppingStade == true)
-					if (ctx.ExecutablesIterators.Count - 2 >= recursionDepth)
-						i = ctx.ExecutablesIterators[recursionDepth];
+					if (ctx.ExecutablesIterators.Count - 2 >= executeRecursionDepth)
+						i = ctx.ExecutablesIterators[executeRecursionDepth];
 					else
 					{
-						i = ctx.ExecutablesIterators[recursionDepth];
+						i = ctx.ExecutablesIterators[executeRecursionDepth];
 						isTransitUppingStade = false;
 						ctx.IsExecutablesIteratorsChanged = false;
 						rootDefinitionIndex = -1;
@@ -74,8 +77,11 @@ namespace DuMir
 					if(isTransitUppingStade == false) ctx.ExecutablesIterators[^1] = i;
 
 					var executablesIteratorsCopy = new List<int>(ctx.ExecutablesIterators);
-					Execute(exec, ctx, recursionDepth + 1, isTransitUppingStade);
-					isTransitUppingStade = false;
+
+					executeRecursionDepth++;
+					Execute(exec);
+					ApplyPragmas();
+					executeRecursionDepth--;
 
 					if(ctx.IsExecutablesIteratorsChanged == true)
 					{
@@ -90,12 +96,12 @@ namespace DuMir
 							}
 						}
 
-						if(rootDefinitionIndex == recursionDepth)
+						if(rootDefinitionIndex == executeRecursionDepth)
 						{
 							i = ctx.ExecutablesIterators[rootDefinitionIndex] - 1; //i++ | look upper into cycle definition
 							isTransitUppingStade = true;
 
-							if(ctx.ExecutablesIterators.Count - 2 < recursionDepth)
+							if(ctx.ExecutablesIterators.Count - 2 < executeRecursionDepth)
 							{
 								isTransitUppingStade = false;
 								ctx.IsExecutablesIteratorsChanged = false;
@@ -109,6 +115,12 @@ namespace DuMir
 				ctx.ExecutablesIterators.RemoveAt(ctx.ExecutablesIterators.Count - 1);
 			}
 			else executable.Execute(ctx);
+		}
+
+		private void ApplyPragmas()
+		{
+			if(ctx.Pragmas.TryGetValue(PragmaKey.DisableConsoleInputAlert, out bool value))
+				ConsoleHandler.Global.Flags.SetOrAddValue(ConsoleFlag.DisableConsoleInputAlert, value);
 		}
 	}
 }

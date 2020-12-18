@@ -15,5 +15,14 @@ namespace DuMir
 				collection.Add(item);
 			}
 		}
+
+		public static void SetOrAddValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+		{
+			if(dictionary.ContainsKey(key))
+				dictionary[key] = value;
+			
+			else
+				dictionary.Add(key, value);
+		}
 	}
 }

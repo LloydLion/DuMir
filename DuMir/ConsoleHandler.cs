@@ -10,8 +10,12 @@ namespace DuMir
 	class ConsoleHandler
 	{
 		public static ConsoleHandler Global { get; private set; }
-		private Func<int, string> readMethod;
-		private Action<string> writeMethod;
+
+		public IDictionary<ConsoleFlag, bool> Flags { get; } = new Dictionary<ConsoleFlag, bool>();
+
+
+		private readonly Func<int, string> readMethod;
+		private readonly Action<string> writeMethod;
 
 
 		public ConsoleHandler(Func<int, string> readMethod, Action<string> writeMethod)
@@ -31,7 +35,9 @@ namespace DuMir
 
 		public string ReadLine()
 		{
-			Logger.LogMessage("Getting user input", Logger.LogLevel.Console);
+			if(!(Flags.TryGetValue(ConsoleFlag.DisableConsoleInputAlert, out bool val) && val))
+				Logger.LogMessage("Getting user input", Logger.LogLevel.Console);
+
 			StringBuilder result = new StringBuilder();
 
 			while(true)

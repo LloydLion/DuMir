@@ -79,7 +79,7 @@ namespace DuMir
 
 			if((bool)Static.LaunchArguments["IsAutoRun"])
 			{
-				await Task.Delay(1500);
+				await Task.Delay(500);
 				Run();
 			}
 		}

@@ -18,5 +18,7 @@ namespace DuMir
 		public bool IsExecutablesIteratorsChanged { get; set; }
 
 		public IList<ProgramBookmark> Bookmarks { get; } = new List<ProgramBookmark>();
+
+		public IDictionary<PragmaKey, bool> Pragmas { get; } = new Dictionary<PragmaKey, bool>();
  	}
 }

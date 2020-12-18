@@ -35,7 +35,8 @@ namespace DuMir
 			typeof(PrintToConsole),
 			typeof(Delay),
 			typeof(LogicOperators),
-			typeof(ReadLineFromConsole)
+			typeof(ReadLineFromConsole),
+			typeof(Pragma)
 		};
 
 		
