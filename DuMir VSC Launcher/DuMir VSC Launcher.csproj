@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>DuMir_VSC_Debuger</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Standard Library">
+      <HintPath>..\..\..\Other\SimpleRockets2SaveMover\libs\Standard Library.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
