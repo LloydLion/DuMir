@@ -43,7 +43,7 @@ namespace DuMir.Models.Code.Instructions
 
 		public override void Execute(InterpretatorContext ctx)
 		{
-			if (SelectedVariant == 0)
+			if (SelectedVariant != 1)
 			{
 
 				var var = ctx.Variables.Single(s => s.Name == InnerCodeAttributes[0]);
