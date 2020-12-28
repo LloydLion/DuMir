@@ -27,14 +27,12 @@ namespace DuMir
 
 		public readonly static Type[] definedInstructions = new Type[]
 		{
-			typeof(NumberOperationsInstructions),
 			typeof(DefineVariable),
 			typeof(CreateBookmark),
 			typeof(GotoBookmark),
 			typeof(AssignVariableValue),
 			typeof(PrintToConsole),
 			typeof(Delay),
-			typeof(LogicOperators),
 			typeof(ReadLineFromConsole),
 			typeof(Pragma)
 		};

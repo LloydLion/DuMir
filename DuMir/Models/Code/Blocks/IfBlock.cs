@@ -11,8 +11,7 @@ namespace DuMir.Models.Code.Blocks
 {
 	class IfBlock : CodeBlock
 	{
-		public const string CODEDEFINE =	"if $#\uF13C" +
-											"if | $# # $#";
+		public const string CODEDEFINE = "if #";
 
 
 		public IfBlock(IEnumerable<CodeExecutable> executables) : base(executables)
@@ -23,30 +22,9 @@ namespace DuMir.Models.Code.Blocks
 
 		public override IList<CodeExecutable> GetExecutablesForBlockExecute(InterpretatorContext ctx)
 		{
-			var value = false;
+			var value = (bool)new ExpressionHandler(InnerCodeAttributes[0]).Run(ctx);
 
-			if(SelectedVariant == 0)
-				value = (bool)ctx.Variables.Single(s => s.Name == InnerCodeAttributes[0]).CurrentValue;
-			else
-			{
-				var a = ((IConvertible)ctx.Variables.Single(s => InnerCodeAttributes[0] == s.Name).CurrentValue).ToDecimal(new NumberFormatInfo());
-				var b = ((IConvertible)ctx.Variables.Single(s => InnerCodeAttributes[2] == s.Name).CurrentValue).ToDecimal(new NumberFormatInfo());
-
-				switch (InnerCodeAttributes[1])
-				{
-					case ">": value = a > b; break;
-					case ">=": value = a >= b; break;
-					case "<": value = a < b; break;
-					case "<=": value = a <= b; break;
-					case "==": value = a == b; break;
-					case "!=": value = a != b; break;
-				}
-			}
-
-			if (value == true)
-			{
-				return base.GetExecutablesForBlockExecute(ctx);
-			}
+			if (value == true) return base.GetExecutablesForBlockExecute(ctx);
 			else return new List<CodeExecutable>();
 		}
 	}

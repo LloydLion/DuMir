@@ -18,15 +18,35 @@ namespace DuMir
 			new Operator("!=", (a, b) => a != b),
 			new Operator("&", (a, b) => a && b),
 			new Operator("|", (a, b) => a || b),
-			new Operator("cast", (a, b) => Static.ShortTypeParsers[b as string].Invoke((a as object).ToString())),
+			new Operator(">", (a, b) => a > b),
+			new Operator(">=", (a, b) => a >= b),
+			new Operator("<", (a, b) => a < b),
+			new Operator("<=", (a, b) => a <= b),
+			new Operator("recast", (a, b) => Static.ShortTypeParsers[b as string].Invoke((a as object).ToString())),
+			new Operator("is", (a, b) => (b as object).GetType().IsInstanceOfType(a)),
 		};
 
 		private readonly Operator selectedOperator;
+		private readonly string operand1, operand2;
+		private readonly bool isPrimitive = false;
 
 
-		public ExpressionHandler(string targetOperator)
+		public ExpressionHandler(string expression)
 		{
-			selectedOperator = operators.Find((s) => s.Define == targetOperator);
+			var list = SmartSplit(expression);
+
+			if (list.Count == 1)
+			{
+				isPrimitive = true;
+				operand1 = list[0];
+			}
+			else
+			{
+				operand1 = list[0];
+				operand2 = list[2];
+
+				selectedOperator = operators.Find((s) => s.Define == list[1]);
+			}
 		}
 
 
@@ -67,9 +87,7 @@ namespace DuMir
 			}
 			else if(operand.StartsWith("[") && operand.EndsWith("]"))
 			{
-				var parts = operand[1..^2].Split(" ");
-
-				return new ExpressionHandler(parts[1]).Run(parts[0], parts[2], ctx);
+				return new ExpressionHandler(operand[1..^1]).Run(ctx);
 			}
 			else
 			{
@@ -77,12 +95,41 @@ namespace DuMir
 			}
 		}
 
-		public object Run(string operand1, string operand2, InterpretatorContext ctx)
+		private static IList<string> SmartSplit(string expression)
 		{
-			var value1 = GetValueFromOperand(operand1, ctx);
-			var value2 = GetValueFromOperand(operand2, ctx);
+			var ss = expression.Split(" ");
 
-			return selectedOperator.Apply(value1, value2);
+			int isInnerOpCounter = 0;
+			List<StringBuilder> chunks = new List<StringBuilder>();
+
+			foreach(var ssitem in ss)
+			{
+				if(isInnerOpCounter == 0) chunks.Add(new StringBuilder());
+
+
+				var prefix = chunks[^1].Length == 0 ? "" : " ";
+				chunks[^1].Append(prefix + ssitem);
+
+				isInnerOpCounter += ssitem.Where(s => s == '[').Count();
+				isInnerOpCounter -= ssitem.Where(s => s == ']').Count();
+			}
+
+			return chunks.Select(s => s.ToString()).ToList();
+		}
+
+		public object Run(InterpretatorContext ctx)
+		{
+			if (isPrimitive == true)
+			{
+				return GetValueFromOperand(operand1, ctx);
+			}
+			else
+			{
+				var value1 = GetValueFromOperand(operand1, ctx);
+				var value2 = GetValueFromOperand(operand2, ctx);
+
+				return selectedOperator.Apply(value1, value2);
+			}
 		}
 	}
 }
