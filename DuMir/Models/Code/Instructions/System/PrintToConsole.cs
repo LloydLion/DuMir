@@ -15,7 +15,7 @@ namespace DuMir.Models.Code.Instructions.System
 		{
 			var attr = InnerCodeAttributes[0];
 
-			if(attr.StartsWith("$")) attr = ctx.Variables.Single(s => s.Name == attr[1..]).CurrentValue.ToString();
+			if(attr.StartsWith("$")) attr = ctx.GetVariable(InnerCodeAttributes[0][1..]).CurrentValue.ToString();
 
 			Logger.LogMessage(attr, Logger.LogLevel.Applitation);
 		}

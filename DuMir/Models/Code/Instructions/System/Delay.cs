@@ -17,7 +17,7 @@ namespace DuMir.Models.Code.Instructions.System
 		{
 			var attr = 0;
 
-			if(InnerCodeAttributes[0].StartsWith("$")) attr = ((IConvertible)ctx.Variables.Single(s => s.Name == InnerCodeAttributes[0][1..]).CurrentValue).ToInt32(new NumberFormatInfo());
+			if(InnerCodeAttributes[0].StartsWith("$")) attr = (int)ctx.GetVariable(InnerCodeAttributes[0][1..]).CurrentValue;
 			else attr = int.Parse(InnerCodeAttributes[0]);
 
 			Thread.Sleep(Math.Abs(attr));

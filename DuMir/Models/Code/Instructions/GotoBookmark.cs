@@ -13,11 +13,7 @@ namespace DuMir.Models.Code.Instructions
 
 		public override void Execute(InterpretatorContext ctx)
 		{
-			var bookmark = ctx.Bookmarks.Single(s => s.Name == InnerCodeAttributes[0]);
-
-			ctx.IsExecutablesIteratorsChanged = true;
-			ctx.ExecutablesIterators.Clear();
-			ctx.ExecutablesIterators.AddRange(bookmark.InterpretatorPointer);
+			ctx.ChangeIterators(ctx.GetBookmark(InnerCodeAttributes[0]).InterpretatorPointer);
 		}
 	}
 }

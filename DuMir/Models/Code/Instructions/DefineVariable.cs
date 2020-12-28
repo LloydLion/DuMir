@@ -22,10 +22,7 @@ namespace DuMir.Models.Code.Instructions
 		public override void Execute(InterpretatorContext ctx)
 		{
 			if(SelectedVariant == 0)
-			{
-				var var = ctx.Variables.Single(s => s.Name == InnerCodeAttributes[0]);
-				var.SetValue(new ExpressionHandler(InnerCodeAttributes[1]).Run(ctx));
-			}
+				ctx.GetVariable(InnerCodeAttributes[0]).SetValue(new ExpressionHandler(InnerCodeAttributes[1]).Run(ctx));
 		}
 	}
 }

@@ -20,5 +20,18 @@ namespace DuMir
 		public IList<ProgramBookmark> Bookmarks { get; } = new List<ProgramBookmark>();
 
 		public IDictionary<PragmaKey, bool> Pragmas { get; } = new Dictionary<PragmaKey, bool>();
- 	}
+
+
+		public ProgramVariable GetVariable(string name) => Variables.Single(s => s.Name == name);
+
+		public ProgramBookmark GetBookmark(string name) => Bookmarks.Single(s => s.Name == name);
+
+		public void ChangeIterators(IList<int> iterators)
+		{
+			ExecutablesIterators.Clear();
+			ExecutablesIterators.AddRange(iterators);
+
+			IsExecutablesIteratorsChanged = true;
+		}
+	}
 }
