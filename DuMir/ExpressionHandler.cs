@@ -71,7 +71,7 @@ namespace DuMir
 		{
 			if(operand.StartsWith("$"))
 			{
-				return ctx.Variables.Single(s => s.Name == operand[1..]).CurrentValue;
+				return ctx.GetVariable(operand[1..]).CurrentValue;
 			}
 			else if(operand.StartsWith("@"))
 			{

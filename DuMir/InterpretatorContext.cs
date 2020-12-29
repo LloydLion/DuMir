@@ -13,6 +13,21 @@ namespace DuMir
 
 		public DuAnalyzedProject Project { get; set; }
 
+		public IReadOnlyList<CodeBlock> BlockPath
+		{
+			get
+			{
+				var list = new List<CodeBlock> { UpperBlock };
+
+				while (list[^1].DefineBlock != null)
+					list.Add(list[^1].DefineBlock);
+
+				return list;
+			}
+		}
+
+		public CodeBlock UpperBlock { get; set; }
+
 		public IList<int> ExecutablesIterators { get; } = new List<int>();
 
 		public bool IsExecutablesIteratorsChanged { get; set; }
@@ -22,11 +37,11 @@ namespace DuMir
 		public IDictionary<PragmaKey, bool> Pragmas { get; } = new Dictionary<PragmaKey, bool>();
 
 
-		public ProgramVariable GetVariable(string name) => Variables.Single(s => s.Name == name);
+		public ProgramVariable GetVariable(string name) => Variables.Single(s => s.Name == name && BlockPath.Contains(s.Context));
 
 		public ProgramBookmark GetBookmark(string name) => Bookmarks.Single(s => s.Name == name);
 
-		public void ChangeIterators(IList<int> iterators)
+		public void ChangeIterators(IEnumerable<int> iterators)
 		{
 			ExecutablesIterators.Clear();
 			ExecutablesIterators.AddRange(iterators);

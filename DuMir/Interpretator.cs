@@ -51,6 +51,8 @@ namespace DuMir
 
 		public void Execute(CodeExecutable executable)
 		{
+			ctx.UpperBlock = executable.DefineBlock;
+
 			if(executable is CodeBlock block)
 			{
 				if(isTransitUppingStade == false) ctx.ExecutablesIterators.Add(-1);

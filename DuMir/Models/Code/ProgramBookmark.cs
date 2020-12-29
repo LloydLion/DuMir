@@ -12,11 +12,14 @@ namespace DuMir.Models.Code
 
 		public string Name { get; }
 
+		public CodeBlock DefineBlock { get; }
 
-		public ProgramBookmark(string name, int[] pointer)
+
+		public ProgramBookmark(string name, int[] pointer, CodeBlock defineBlock)
 		{
 			InterpretatorPointer = pointer;
 			Name = name;
+			DefineBlock = defineBlock;
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace DuMir.Models.Code.Instructions
 
 		public override void OnStart(InterpretatorContext ctx)
 		{
-			ctx.Bookmarks.Add(new ProgramBookmark(InnerCodeAttributes[0], ctx.ExecutablesIterators.ToArray()));
+			ctx.Bookmarks.Add(new ProgramBookmark(InnerCodeAttributes[0], ctx.ExecutablesIterators.ToArray(), DefineBlock));
 		}
 	}
 }
